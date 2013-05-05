@@ -78,6 +78,14 @@ cursesxx::Geometry::Geometry( const Geometry& parent,
     width_( std::max( width, parent.width_ ) )
 {}
 
+int cursesxx::Geometry::height() const {
+    return this->height_;
+}
+
+int cursesxx::Geometry::width() const {
+    return this->width_;
+}
+
 cursesxx::Anchor::Anchor() : y( 0 ), x( 0 ) {}
 
 cursesxx::Anchor::Anchor( const int y, const int x ) : y( y ), x( x ) {}
