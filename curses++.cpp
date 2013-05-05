@@ -238,7 +238,8 @@ void cursesxx::Widget::refresh() {
 }
 
 void cursesxx::Widget::redraw() {
-    this->paint();
+    this->window.refresh();
+}
 
     for( auto& child : children )
         child.redraw();

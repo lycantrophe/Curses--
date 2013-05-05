@@ -119,7 +119,7 @@ namespace cursesxx {
             Widget( const Widget& parent, const Geometry& g,
                     const Anchor& a, const BorderPrototype& b );
 
-            virtual ~Widget();
+            ~Widget();
 
             /*
              * Adds a new child widget to this object and forwards its
@@ -138,41 +138,27 @@ namespace cursesxx {
             Anchor anchor;
             std::vector< Widget > children;
 
-        protected:
             class Window {
                 public:
                     Window( int, int, int, int );
                     ~Window();
 
                     void refresh();
+                    void clear();
                     WINDOW* window;
             };
 
             Window window;
-
-        private:
             Border decoration;
 
-            virtual void paint();
-
     };
 
-    class Panel : public Widget {
-        public:
-        private:
-    };
-
-    class Button : public Widget {
-        public:
-        private:
-    };
-
-    class Input : public Widget {
-        public:
-        private:
-    };
-
-    class Label : public Widget {
+    /*
+     * This is ment fordisplaying any text (a somewhat basic widget in some
+     * sense) which is curses is practically any picture. Takes size
+     * directions, but all drawing anchors the widgets (0,0)
+     */
+    class Label {
         public:
             Label( const std::string& text = "Label",
                     const Geometry& g = { 1, 0 },
