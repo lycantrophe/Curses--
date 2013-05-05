@@ -128,7 +128,80 @@ namespace cursesxx {
 
         private:
             Border decoration;
+
+            virtual void paint();
+
     };
+
+    class Panel : public Widget {
+        public:
+        private:
+    };
+
+    class Button : public Widget {
+        public:
+        private:
+    };
+
+    class Input : public Widget {
+        public:
+        private:
+    };
+
+    class Label : public Widget {
+        public:
+            Label( const std::string& text = "Label",
+                    const Geometry& g = { 1, 0 },
+                    const int maxint = 0 );
+
+            /* The variadic templates "forwards" the available constructors in
+             * Widget. Unless geometry is the 2nd argument the templates are
+             * triggered. All arguments after the text (or optional int) will
+             * be given to the Widget constructor
+             */
+            template< typename... Args > 
+            Label( const std::string&, Args&... );
+            template< typename... Args > 
+            Label( const std::string& text, const int maxwidth, Args&... );
+            ~Label();
+
+        private:
+            std::string text;
+            void paint();
+            static Geometry label_wrap( const std::string&, const int width );
+    };
+
+    class Application {
+        public:
+            void enable_keypad( const bool enable = true );
+            void enable_echo( const bool enable = true );
+        private:
+            class Screen {
+                public:
+                    Screen();
+                    ~Screen();
+                    /* This wrapper class makes sure the curses initialization
+                     * happens before any members tries to create and draw
+                     * their windows.
+                     */
+            };
+            Screen screen;
+    };
+
+    template< typename... Args >
+        Label::Label( const std::string& text, Args&... params ) :
+            Widget( params... ),
+            text( text )
+    {}
+
+    template< typename... Args >
+        Label::Label( const std::string& text,
+                const int maxwidth,
+                Args&... params ) :
+            Widget( label_wrap( text, maxwidth ), params... ),
+            text( text )
+    {}
+
 }
 
 #endif //CURSESXX_APPLICATION

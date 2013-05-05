@@ -256,3 +256,42 @@ cursesxx::Widget::Window::~Window() {
     wrefresh( this->window );
     delwin( this->window );
 }
+
+void cursesxx::Widget::Window::refresh() {
+    wrefresh( this->window );
+}
+
+cursesxx::Geometry cursesxx::Label::label_wrap(
+        const std::string& str, const int width ) {
+
+    return cursesxx::Geometry( ( str.size() / width ) + 1, width );
+}
+
+cursesxx::Label::Label( const std::string& text, const Geometry& g, const int maxwidth ) :
+    Widget( maxwidth == 0 ? g : cursesxx::Label::label_wrap( text, maxwidth ) ),
+    text( text )
+{}
+
+void cursesxx::Label::paint() {
+    wclear( this->window.window );
+    waddstr( this->window.window, this->text.c_str() );
+    wrefresh( this->window.window );
+}
+
+cursesxx::Label::~Label() {}
+
+cursesxx::Application::Screen::Screen() {
+    initscr();
+}
+
+cursesxx::Application::Screen::~Screen() {
+    endwin();
+}
+
+void cursesxx::Application::enable_keypad( const bool enable ) {
+    keypad( stdscr, enable );
+}
+
+void cursesxx::Application::enable_echo( const bool enable ) {
+    enable ? echo() : noecho();
+}
