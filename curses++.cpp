@@ -281,9 +281,11 @@ cursesxx::Geometry cursesxx::Label::label_wrap(
     return cursesxx::Geometry( ( str.size() / width ) + 1, width );
 }
 
-cursesxx::Label::Label( const std::string& text, const Geometry& g, const int maxwidth ) :
+cursesxx::Label::Label( const std::string& text, const int maxwidth ) :
     text( text ),
-    widget( maxwidth == 0 ? g : cursesxx::Label::label_wrap( text, maxwidth ) )
+    widget( maxwidth == 0 ?
+            Geometry( 1, text.size() ) :
+            cursesxx::Label::label_wrap( text, maxwidth ) )
 {}
 
 void cursesxx::Label::redraw() {

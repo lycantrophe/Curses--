@@ -164,14 +164,12 @@ namespace cursesxx {
      */
     class Label {
         public:
-            Label( const std::string& text = "Label",
-                    const Geometry& g = { 1, 0 },
-                    const int maxint = 0 );
+            Label( const std::string& text = "Label", const int maxint = 0 );
 
             /* The variadic templates "forwards" the available constructors in
-             * Widget. Unless geometry is the 2nd argument the templates are
-             * triggered. All arguments after the text (or optional int) will
-             * be given to the Widget constructor
+             * Widget. All arguments after the text (or optional int) will
+             * be given to the Widget constructor. If Geometry is passed it
+             * will trigger a compile error
              */
             template< typename... Args > 
             Label( const std::string&, Args&... );
@@ -185,12 +183,19 @@ namespace cursesxx {
             std::string text;
             Widget widget;
             static Geometry label_wrap( const std::string&, const int width );
+
+            /* unimplemented, so these should trigger an error */
+            template< typename... Args > 
+            Label( const std::string&, const Geometry&, Args&... );
+            template< typename... Args > 
+            Label( const std::string& text, const int maxwidth, const Geometry&, Args&... );
     };
 
     class Application {
         public:
             Application& enable_keypad( const bool enable = true );
             Application& enable_echo( const bool enable = true );
+
         private:
             class Screen {
                 public:
@@ -207,7 +212,7 @@ namespace cursesxx {
     template< typename... Args >
         Label::Label( const std::string& text, Args&... params ) :
             text( text ),
-            widget( params... )
+            widget( { 1, text.size() }, params... )
     {}
 
     template< typename... Args >
