@@ -288,10 +288,12 @@ cursesxx::Application::Screen::~Screen() {
     endwin();
 }
 
-void cursesxx::Application::enable_keypad( const bool enable ) {
+cursesxx::Application& cursesxx::Application::enable_keypad( const bool enable ) {
     keypad( stdscr, enable );
+    return *this;
 }
 
-void cursesxx::Application::enable_echo( const bool enable ) {
+cursesxx::Application& cursesxx::Application::enable_echo( const bool enable ) {
     enable ? echo() : noecho();
+    return *this;
 }
