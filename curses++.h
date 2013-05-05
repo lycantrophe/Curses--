@@ -98,10 +98,25 @@ namespace cursesxx {
             void refresh();
             void redraw();
 
+
         private:
-            WINDOW* window;
             Geometry geometry;
             Anchor anchor;
+            std::vector< Widget > children;
+
+        protected:
+            class Window {
+                public:
+                    Window( int, int, int, int );
+                    ~Window();
+
+                    void refresh();
+                    WINDOW* window;
+            };
+
+            Window window;
+
+        private:
             Border decoration;
     };
 }
