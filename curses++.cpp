@@ -261,7 +261,6 @@ cursesxx::Widget::Window::~Window() {
 
 void cursesxx::Widget::Window::refresh() {
     wrefresh( this->window );
-    wgetch( this->window );
 }
 
 void cursesxx::Widget::Window::clear() {
@@ -283,14 +282,13 @@ cursesxx::Geometry cursesxx::Label::label_wrap(
 }
 
 cursesxx::Label::Label( const std::string& text, const Geometry& g, const int maxwidth ) :
-    Widget( maxwidth == 0 ? g : cursesxx::Label::label_wrap( text, maxwidth ) ),
-    text( text )
+    text( text ),
+    widget( maxwidth == 0 ? g : cursesxx::Label::label_wrap( text, maxwidth ) )
 {}
 
-void cursesxx::Label::paint() {
-    wclear( this->window.window );
-    waddstr( this->window.window, this->text.c_str() );
-    wrefresh( this->window.window );
+void cursesxx::Label::redraw() {
+    this->widget.write( this->text );
+    this->widget.refresh();
 }
 
 cursesxx::Label::~Label() {}

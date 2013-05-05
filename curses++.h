@@ -179,9 +179,11 @@ namespace cursesxx {
             Label( const std::string& text, const int maxwidth, Args&... );
             ~Label();
 
+            void redraw();
+
         private:
             std::string text;
-            void paint();
+            Widget widget;
             static Geometry label_wrap( const std::string&, const int width );
     };
 
@@ -204,16 +206,16 @@ namespace cursesxx {
 
     template< typename... Args >
         Label::Label( const std::string& text, Args&... params ) :
-            Widget( params... ),
-            text( text )
+            text( text ),
+            widget( params... )
     {}
 
     template< typename... Args >
         Label::Label( const std::string& text,
                 const int maxwidth,
                 Args&... params ) :
-            Widget( label_wrap( text, maxwidth ), params... ),
-            text( text )
+            text( text ),
+            widget( label_wrap( text, maxwidth ), params... )
     {}
 
 }
