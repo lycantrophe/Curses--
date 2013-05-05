@@ -241,11 +241,12 @@ void cursesxx::Widget::redraw() {
     this->window.refresh();
 }
 
-    for( auto& child : children )
-        child.redraw();
+void cursesxx::Widget::write( const std::string& str ) {
+    this->window.write( str );
 }
 
-void cursesxx::Widget::paint() {
+void cursesxx::Widget::write( const std::string& str, const int maxlen ) {
+    this->window.write( str, maxlen );
 }
 
 cursesxx::Widget::Window::Window( int h, int w, int y, int x ) :
@@ -260,6 +261,19 @@ cursesxx::Widget::Window::~Window() {
 
 void cursesxx::Widget::Window::refresh() {
     wrefresh( this->window );
+    wgetch( this->window );
+}
+
+void cursesxx::Widget::Window::clear() {
+    wclear( this->window );
+}
+
+void cursesxx::Widget::Window::write( const std::string& str ) {
+    waddstr( this->window, str.c_str() );
+}
+
+void cursesxx::Widget::Window::write( const std::string& str, const int maxlen ) {
+    waddnstr( this->window, str.c_str(), maxlen );
 }
 
 cursesxx::Geometry cursesxx::Label::label_wrap(

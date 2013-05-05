@@ -131,6 +131,8 @@ namespace cursesxx {
 
             void refresh();
             void redraw();
+            void write( const std::string& str );
+            void write( const std::string& str, const int maxlen );
 
 
         private:
@@ -145,6 +147,8 @@ namespace cursesxx {
 
                     void refresh();
                     void clear();
+                    void write( const std::string& );
+                    void write( const std::string&, const int maxlen );
                     WINDOW* window;
             };
 
