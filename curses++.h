@@ -15,6 +15,12 @@ namespace cursesxx {
             unsigned int R, G, B;
     };
 
+    /*
+     * BorderPrototype is a saveable, passable stateful object that captures a
+     * specific border type. As the Border object itself has no idea what kind
+     * of borders it draws, this is necessary should some state have to be
+     * saved, stored or passed around before the actual drawing.
+     */
     class BorderPrototype {
         public:
             BorderPrototype();
@@ -26,6 +32,10 @@ namespace cursesxx {
             const char ls, rs, ts, bs, tl, tr, bl, br;
     };
 
+
+    /*
+     * Draws the border for a particular window
+     */
     class Border {
         public:
             Border();
@@ -42,6 +52,9 @@ namespace cursesxx {
             WINDOW* win;
     };
 
+    /*
+     * Stores and represents an objects geometry, that is its height and width.
+     */
     class Geometry {
         public:
             Geometry();
@@ -59,6 +72,11 @@ namespace cursesxx {
             int width_;
     };
 
+    /*
+     * Stores and represents an objects position. When constructed with two
+     * anchors as parameters it calculates the position where relative to
+     * base, i.e. it treats base as (0,0)
+     */
     class Anchor {
         public:
             Anchor();
@@ -68,6 +86,12 @@ namespace cursesxx {
     };
 
     class Widget {
+        /*
+         * Base class for all screen elements. This object is responsible for
+         * all frame-and-window related activities; positioning on the screen,
+         * drawing, colouring etc. It should also manage and free all resources
+         * according to its scope. 
+         */
         public:
             Widget();
             Widget( const Geometry& );
