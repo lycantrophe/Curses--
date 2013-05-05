@@ -225,6 +225,28 @@ cursesxx::Widget::Widget( const Widget& parent, const Geometry& g,
 cursesxx::Widget::~Widget() {
 }
 
+template< typename... Attr >
+void cursesxx::Widget::add_child( Attr... attributes ) {
+    this->children.emplace_back( *this, attributes... );
+}
+
+void cursesxx::Widget::refresh() {
+    this->window.refresh();
+
+    for( auto& child : children )
+        child.refresh();
+}
+
+void cursesxx::Widget::redraw() {
+    this->paint();
+
+    for( auto& child : children )
+        child.redraw();
+}
+
+void cursesxx::Widget::paint() {
+}
+
 cursesxx::Widget::Window::Window( int h, int w, int y, int x ) :
     window( newwin( h, w, y, x ) )
 {}

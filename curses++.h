@@ -1,6 +1,8 @@
 #ifndef CURSESXX_APPLICATION
 #define CURSESXX_APPLICATION
 
+#include <vector>
+#include <string>
 #include <ncurses.h>
 
 namespace cursesxx {
@@ -93,7 +95,15 @@ namespace cursesxx {
             Widget( const Widget& parent, const Geometry& g,
                     const Anchor& a, const BorderPrototype& b );
 
-            ~Widget();
+            virtual ~Widget();
+
+            /*
+             * Adds a new child widget to this object and forwards its
+             * construction parameters. This avoids unecessary
+             * construction/destruction and ensures a safe state for curses
+             */
+            template< typename... Attr >
+            void add_child( Attr... attributes );
 
             void refresh();
             void redraw();
