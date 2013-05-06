@@ -121,24 +121,19 @@ namespace cursesxx {
 
             ~Widget();
 
-            /*
-             * Adds a new child widget to this object and forwards its
-             * construction parameters. This avoids unecessary
-             * construction/destruction and ensures a safe state for curses
-             */
-            template< typename... Attr >
-            void add_child( Attr... attributes );
+            int height() const;
+            int width() const;
 
             void refresh();
             void redraw();
             void write( const std::string& str );
             void write( const std::string& str, const int maxlen );
 
+            const Widget& get_widget() const;
 
         private:
             Geometry geometry;
             Anchor anchor;
-            std::vector< Widget > children;
 
             class Window {
                 public:

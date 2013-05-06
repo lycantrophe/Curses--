@@ -225,16 +225,16 @@ cursesxx::Widget::Widget( const Widget& parent, const Geometry& g,
 cursesxx::Widget::~Widget() {
 }
 
-template< typename... Attr >
-void cursesxx::Widget::add_child( Attr... attributes ) {
-    this->children.emplace_back( *this, attributes... );
+int cursesxx::Widget::height() const {
+    return this->geometry.height();
+}
+
+int cursesxx::Widget::width() const {
+    return this->geometry.width();
 }
 
 void cursesxx::Widget::refresh() {
     this->window.refresh();
-
-    for( auto& child : children )
-        child.refresh();
 }
 
 void cursesxx::Widget::redraw() {
