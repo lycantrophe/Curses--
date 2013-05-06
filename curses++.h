@@ -169,10 +169,9 @@ namespace cursesxx {
             template< typename... Args > 
             Label( const std::string&, Args&... );
             template< typename... Args > 
-            Label( const std::string& text, const int maxwidth, Args&... );
-            ~Label();
 
             void redraw();
+            const Widget& get_widget() const;
 
         private:
             std::string text;

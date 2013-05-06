@@ -293,7 +293,9 @@ void cursesxx::Label::redraw() {
     this->widget.refresh();
 }
 
-cursesxx::Label::~Label() {}
+const cursesxx::Widget& cursesxx::Label::get_widget() const {
+    return this->widget;
+}
 
 cursesxx::Application::Screen::Screen() {
     initscr();
