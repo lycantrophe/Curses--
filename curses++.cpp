@@ -325,3 +325,21 @@ cursesxx::Application& cursesxx::Application::enable_echo( const bool enable ) {
     enable ? echo() : noecho();
     return *this;
 }
+
+int cursesxx::mid( int A, int B ) {
+    return ( A - B ) / 2;
+}
+
+cursesxx::Anchor cursesxx::mid( const cursesxx::Geometry& child ) {
+
+    return { mid( LINES - 1, child.height() ), mid( COLS - 1, child.width() ) };
+}
+
+/* rvalue? */
+cursesxx::Anchor cursesxx::mid(
+        const cursesxx::Widget& parent,
+        const cursesxx::Geometry& child ) {
+
+    return { mid( parent.height(), child.height() ),
+        mid( parent.width(), child.width() ) };
+}

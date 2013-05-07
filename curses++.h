@@ -203,6 +203,11 @@ namespace cursesxx {
             Screen screen;
     };
 
+
+    int mid( int A, int B );
+    Anchor mid( const Geometry& child );
+    Anchor mid( const Widget& parent, const Geometry& child );
+
     template< typename... Args >
         Label::Label( const std::string& text, Args&... params ) :
             text( text ),
