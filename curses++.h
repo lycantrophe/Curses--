@@ -167,8 +167,31 @@ namespace cursesxx {
              * will trigger a compile error
              */
             template< typename... Args > 
-            Label( const std::string&, Args&... );
+                Label( const std::string&, const Args&... );
+
             template< typename... Args > 
+                Label( const std::string& text, const int maxwidth, const Args&... );
+
+            /* These two constructors allow proxying arbitrary Widgets (not the
+             * only the widget object, but others like Label and Panel as well)
+             * using the get_widget() method so that relative position can be
+             * utilized. The function pointer cast is necessary in order for
+             * C++ template type inference to work; it relies on a
+             * Widget-returning method to be present (get_widget()). Otherwise
+             * it would give a compile error when trying to use other arguments
+             * without a parent (a widget) argument.
+             */
+
+            template< typename W, typename... Args >
+                Label( const W& widget,
+                        const std::string& text,
+                        const Args&... params );
+
+            template< typename W, typename... Args >
+                Label( const W& widget,
+                        const std::string& text,
+                        const int maxwidth,
+                        const Args&... params );
 
             void redraw();
             const Widget& get_widget() const;
@@ -180,9 +203,16 @@ namespace cursesxx {
 
             /* unimplemented, so these should trigger an error */
             template< typename... Args > 
-            Label( const std::string&, const Geometry&, Args&... );
-            template< typename... Args > 
-            Label( const std::string& text, const int maxwidth, const Geometry&, Args&... );
+                Label( const std::string&, const Geometry&, const Args&... );
+
+            template< typename... Args >
+                Label( const std::string& text, const int maxwidth,
+                        const Geometry&, const Args&... );
+
+            Label& operator=( const Label& );
+            Label( const Label& );
+
+
     };
 
     class Application {
@@ -209,19 +239,35 @@ namespace cursesxx {
     Anchor mid( const Widget& parent, const Geometry& child );
 
     template< typename... Args >
-        Label::Label( const std::string& text, Args&... params ) :
+        Label::Label( const std::string& text, const Args&... params ) :
             text( text ),
-            widget( { 1, text.size() }, params... )
+            widget( Geometry( 1, text.size() ), params... )
+    {}
+
+    template< typename W, typename... Args >
+        Label::Label( const W& w,
+                const std::string& text,
+                const Args&... params ) :
+            text( text ),
+            widget( w.get_widget(), params... )
     {}
 
     template< typename... Args >
         Label::Label( const std::string& text,
                 const int maxwidth,
-                Args&... params ) :
+                const Args&... params ) :
             text( text ),
             widget( label_wrap( text, maxwidth ), params... )
     {}
 
+    template< typename W, typename... Args >
+        Label::Label( const W& w,
+                const std::string& text,
+                const int maxwidth,
+                const Args&... params ) :
+            text( text ),
+            widget( w.get_widget(), label_wrap( text, maxwidth ), params... )
+    {}
 }
 
 #endif //CURSESXX_APPLICATION
