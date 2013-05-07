@@ -201,6 +201,17 @@ cursesxx::Widget::Widget( const Widget& parent, const BorderPrototype& b ) :
 {}
 
 cursesxx::Widget::Widget( const Widget& parent,
+        const Geometry& g,
+        const Anchor& a ) :
+    geometry( g ),
+    anchor( parent.anchor, a ),
+    window( this->geometry.height(),
+            this->geometry.width(),
+            this->anchor.y,
+            this->anchor.x )
+{}
+
+cursesxx::Widget::Widget( const Widget& parent,
         const Anchor& a, const BorderPrototype& b ) :
     geometry( parent.geometry ),
     anchor( parent.anchor, a ),
