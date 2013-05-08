@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <ncurses.h>
+#include <algorithm>
 #include "curses++.h"
 
 cursesxx::BorderPrototype::BorderPrototype() : 
@@ -250,6 +251,10 @@ void cursesxx::Widget::refresh() {
 
 void cursesxx::Widget::redraw() {
     this->window.refresh();
+}
+
+void cursesxx::Widget::clear() {
+    this->window.clear();
 }
 
 void cursesxx::Widget::write( const std::string& str ) {

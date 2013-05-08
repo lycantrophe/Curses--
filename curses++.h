@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <functional>
 #include <ncurses.h>
 
 namespace cursesxx {
@@ -126,6 +127,8 @@ namespace cursesxx {
 
             void refresh();
             void redraw();
+            void clear();
+
             void write( const std::string& str );
             void write( const std::string& str, const int maxlen );
 
