@@ -291,26 +291,71 @@ void cursesxx::Widget::Window::write( const std::string& str, const int maxlen )
     waddnstr( this->window, str.c_str(), maxlen );
 }
 
-cursesxx::Geometry cursesxx::Label::label_wrap(
+/*
+ * TEXTFIELD
+ */
+
+void cursesxx::Textfield::write() {
+    this->widget.clear();
+    this->widget.move( 0, 0 );
+    this->widget.write( this->text );
+}
+
+void cursesxx::Textfield::write( const std::string& str ) {
+    this->text = str;
+    this->write();
+}
+
+void cursesxx::Textfield::append( const std::string& str ) {
+    this->text.append( str );
+}
+
+void cursesxx::Textfield::redraw() {
+    this->widget.refresh();
+}
+
+const cursesxx::Widget& cursesxx::Textfield::get_widget() const {
+    return this->widget;
+}
+
+void cursesxx::Textfield::decorate( const cursesxx::BorderStyle& b ) {
+    this->widget.decorate( b );
+}
+
+cursesxx::Geometry cursesxx::Textfield::text_wrap( const std::string& str ) {
+    const auto lines = std::count( str.begin(), str.end(), '\n' );
+
+    size_t longest_line = 0;
+    size_t previous_pos = 0;
+    size_t current_pos = 0;
+
+    while( ( current_pos = str.find( '\n', current_pos ) ) ) {
+        longest_line = std::max( longest_line, current_pos - previous_pos );
+        previous_pos = current_pos;
+
+        if( current_pos == std::string::npos ) break;
+    }
+
+    const auto cols = std::min( longest_line , str.size() );
+    return cursesxx::Geometry( lines + 1, cols );
+}
+
+cursesxx::Geometry cursesxx::Textfield::text_wrap(
         const std::string& str, const int width ) {
 
     return cursesxx::Geometry( ( str.size() / width ) + 1, width );
 }
 
-cursesxx::Label::Label( const std::string& text, const int maxwidth ) :
-    text( text ),
-    widget( maxwidth == 0 ?
-            Geometry( 1, text.size() ) :
-            cursesxx::Label::label_wrap( text, maxwidth ) )
+cursesxx::Label::Label( const std::string& text ) :
+    widget( text )
 {}
 
 void cursesxx::Label::redraw() {
-    this->widget.write( this->text );
-    this->widget.refresh();
+    this->widget.redraw();
 }
 
 const cursesxx::Widget& cursesxx::Label::get_widget() const {
-    return this->widget;
+    return this->widget.get_widget();
 }
 
 cursesxx::Application::Screen::Screen() {

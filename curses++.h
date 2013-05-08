@@ -156,27 +156,40 @@ namespace cursesxx {
     };
 
     /*
+     * Special case of pre-configured Widget. Takes only geometry hints and
+     * calculates center-of-screen placement. Can take a virtual screen as
+     * well.
+     *
+     * Takes only "output types" such as input field, list selectors or boolean
+     * selectors. For a simple message dialogue, give it a bool selector with
+     * one option and ignore the return value.
+     *
+     * All constructors requires an -explicit- geometry argument in order to be
+     * able to calculate position.
+     */
+
+
+
+    /*
      * This is ment fordisplaying any text (a somewhat basic widget in some
      * sense) which is curses is practically any picture. Takes size
      * directions, but all drawing anchors the widgets (0,0)
      */
-    class Label {
+    class Textfield {
         public:
-            Label( const std::string& text = "Label", const int maxint = 0 );
 
             /* The variadic templates "forwards" the available constructors in
-             * Widget. All arguments after the text (or optional int) will
-             * be given to the Widget constructor. If Geometry is passed it
-             * will trigger a compile error
+             * Widget. 
              */
-            template< typename... Args > 
-                Label( const std::string&, const Args&... );
 
             template< typename... Args > 
-                Label( const std::string& text, const int maxwidth, const Args&... );
+                Textfield( const std::string& text, const Args&... );
 
-            /* These two constructors allow proxying arbitrary Widgets (not the
-             * only the widget object, but others like Label and Panel as well)
+            template< typename... Args > 
+                Textfield( const std::string& text, const Geometry&, const Args&... );
+
+            /* This constructor allow proxying arbitrary Widgets (not the
+             * only the widget object, but others like Textfield and Panel as well)
              * using the get_widget() method so that relative position can be
              * utilized. The function pointer cast is necessary in order for
              * C++ template type inference to work; it relies on a
@@ -185,37 +198,63 @@ namespace cursesxx {
              * without a parent (a widget) argument.
              */
 
-            template< typename W, typename... Args >
-                Label( const W& widget,
-                        const std::string& text,
-                        const Args&... params );
+            template< typename Parent, typename... Args >
+                Textfield( const Parent&, const std::string&, const Args&... );
 
-            template< typename W, typename... Args >
-                Label( const W& widget,
-                        const std::string& text,
-                        const int maxwidth,
-                        const Args&... params );
+            void write();
+            void write( const std::string& );
+            void append( const std::string& );
+
+            void redraw();
+            void decorate( const BorderStyle& );
+            const Widget& get_widget() const;
+
+            static Geometry text_wrap( const std::string&, const int width );
+            static Geometry text_wrap( const std::string& );
+
+        private:
+            std::string text;
+            Widget widget;
+
+            /* unimplemented, so these should trigger an error */
+
+            Textfield& operator=( const Textfield& );
+            Textfield( const Textfield& );
+
+    };
+    /*
+     * Creates a new screen element that is a static label. For now it is
+     * "immutable" in the sense that if you want to change a label (and by
+     * extension resize it) you have to re-create the object.
+     *
+     * Label will not accept any size directions; the Geometry parameters are
+     * disabled compile-time. Its size is calculated based on the size on label
+     * text as well as the horizontal threshold passed as an optional
+     * parameter. In short, it is a stricter Textfield.
+     *
+     * It takes no explicit Geometry parameters or size hints; instead, it
+     * inherits the attribute of determining breaks from the newlines in the
+     * input string
+     */
+    class Label {
+        public:
+            Label( const std::string& text = "Label" );
+
+            template< typename... Args > 
+                Label( const Args&... );
 
             void redraw();
             const Widget& get_widget() const;
 
         private:
-            std::string text;
-            Widget widget;
-            static Geometry label_wrap( const std::string&, const int width );
+            Textfield widget;
 
             /* unimplemented, so these should trigger an error */
-            template< typename... Args > 
-                Label( const std::string&, const Geometry&, const Args&... );
-
-            template< typename... Args >
-                Label( const std::string& text, const int maxwidth,
-                        const Geometry&, const Args&... );
+            template< typename... Pre, typename... Post > 
+                Label( const Pre&..., const Geometry&, const Post&... );
 
             Label& operator=( const Label& );
             Label( const Label& );
-
-
     };
 
     class Application {
@@ -241,35 +280,41 @@ namespace cursesxx {
     Anchor mid( const Geometry& child );
     Anchor mid( const Widget& parent, const Geometry& child );
 
-    template< typename... Args >
-        Label::Label( const std::string& text, const Args&... params ) :
-            text( text ),
-            widget( Geometry( 1, text.size() ), params... )
+    /* TEMPLATE IMPLEMENTATIONS */
+    /* CONSTRUCTORS */
+
+    template< typename... Args > 
+        Textfield::Textfield( const std::string& text, const Args&... args ) :
+            Textfield( text, Textfield::text_wrap( text ), args... )
     {}
 
-    template< typename W, typename... Args >
-        Label::Label( const W& w,
+    template< typename... Args > 
+        Textfield::Textfield( const std::string& text,
+                const Geometry& g,
+                const Args&... args ):
+            text( text ),
+            widget( g, args... )
+    {
+        this->widget.write( text );
+    }
+
+    template< typename Parent, typename... Args >
+        Textfield::Textfield( const Parent& p,
                 const std::string& text,
-                const Args&... params ) :
+                const Args&... args ) :
             text( text ),
-            widget( w.get_widget(), params... )
+            widget( p.get_widget(), args... )
+    {
+        this->widget.write( text );
+    }
+
+    template< typename... Args > 
+        Label::Label( const Args&... args ) :
+            widget( args... )
     {}
 
-    template< typename... Args >
-        Label::Label( const std::string& text,
-                const int maxwidth,
-                const Args&... params ) :
-            text( text ),
-            widget( label_wrap( text, maxwidth ), params... )
     {}
 
-    template< typename W, typename... Args >
-        Label::Label( const W& w,
-                const std::string& text,
-                const int maxwidth,
-                const Args&... params ) :
-            text( text ),
-            widget( w.get_widget(), label_wrap( text, maxwidth ), params... )
     {}
 }
 
