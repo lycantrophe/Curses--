@@ -1,10 +1,10 @@
 #include <algorithm>
 #include <ncurses.h>
-#include <algorithm>
+#include <string>
 #include "curses++.h"
 
-cursesxx::BorderPrototype::BorderPrototype() : 
-    detailed( false ),
+cursesxx::BorderStyle::BorderStyle() : 
+    detailed( true ),
     ls( '|' ),
     rs( '-' ),
     ts( ' ' ), bs( ' ' ),
@@ -12,7 +12,7 @@ cursesxx::BorderPrototype::BorderPrototype() :
     bl( ' ' ), br( ' ' )
 {}
 
-cursesxx::BorderPrototype::BorderPrototype( char vert, char hor ) : 
+cursesxx::BorderStyle::BorderStyle( char vert, char hor ) : 
     detailed( false ),
     ls( vert ),
     rs( hor ),
@@ -21,7 +21,7 @@ cursesxx::BorderPrototype::BorderPrototype( char vert, char hor ) :
     bl( ' ' ), br( ' ' )
 {}
 
-cursesxx::BorderPrototype::BorderPrototype( char ls, char rs, char ts,
+cursesxx::BorderStyle::BorderStyle( char ls, char rs, char ts,
         char bs, char tl, char tr, char bl, char br ) :
     detailed( true ),
     ls( ls ), rs( rs ),
@@ -47,19 +47,39 @@ cursesxx::Border::Border( WINDOW* win, char ls, char rs, char ts,
     wborder( win, ls, rs, ts, bs, tl, tr, bl, br );
 }
 
-cursesxx::Border::Border( WINDOW* win, const BorderPrototype& proto ) :
-    win( win ) {
-        if( proto.detailed )
-            box( win, proto.ls, proto.rs );
-        else
-            wborder( win, proto.ls, proto.rs, proto.ts, proto.bs, proto.tl,
-                    proto.tr, proto.bl, proto.br );
-    }
+static WINDOW* draw_border( WINDOW* win, const cursesxx::BorderStyle& proto ) {
+    if( !proto.detailed )
+        box( win, proto.ls, proto.rs );
+    else
+        wborder( win, proto.ls, proto.rs, proto.ts, proto.bs, proto.tl,
+                proto.tr, proto.bl, proto.br );
+
+    return win;
+}
+
+cursesxx::Border::Border( WINDOW* win, const BorderStyle& proto ) :
+    win( draw_border( win, proto ) )
+{}
+
+void cursesxx::Border::set( const cursesxx::BorderStyle& style ) {
+    /* Cannot set border unless set during encapsulation object construction */
+    if( this->win == nullptr ) return; 
+
+    draw_border( this->win, style );
+}
+
+void cursesxx::Border::set( const cursesxx::BorderStyle&& style ) {
+    /* Cannot set border unless set during encapsulation object construction */
+    if( this->win == nullptr ) return; 
+
+    wborder( this->win, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' );
+    draw_border( this->win, style );
+}
 
 cursesxx::Border::~Border() {
     if( this->win == nullptr ) return;
 
-    box( this->win, ' ', ' ' );
+    wborder( this->win, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' );
 }
 
 cursesxx::Geometry::Geometry() :

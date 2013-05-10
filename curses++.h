@@ -17,16 +17,16 @@ namespace cursesxx {
     };
 
     /*
-     * BorderPrototype is a saveable, passable stateful object that captures a
+     * BorderStyle is a saveable, passable stateful object that captures a
      * specific border type. As the Border object itself has no idea what kind
      * of borders it draws, this is necessary should some state have to be
      * saved, stored or passed around before the actual drawing.
      */
-    class BorderPrototype {
+    class BorderStyle {
         public:
-            BorderPrototype();
-            BorderPrototype( char vert, char hor );
-            BorderPrototype( char ls, char rs, char ts,
+            BorderStyle();
+            BorderStyle( char vert, char hor );
+            BorderStyle( char ls, char rs, char ts,
                     char bs, char tl, char tr, char bl, char br );
 
             const bool detailed;
@@ -44,13 +44,19 @@ namespace cursesxx {
             Border( WINDOW*, char vert, char hor );
             Border( WINDOW*, char ls, char rs, char ts,
                     char bs, char tl, char tr, char bl, char br );
-            Border( WINDOW*, const BorderPrototype& );
+            Border( WINDOW*, const BorderStyle& );
 
-            Border( const Border& );
             ~Border();
+
+            void set( const BorderStyle& );
+            void set( const BorderStyle&& );
 
         private:
             WINDOW* win;
+
+            /* trigger compile error */
+            Border& operator=( const Border& );
+            Border( const Border& );
     };
 
     /*
@@ -97,28 +103,28 @@ namespace cursesxx {
             Widget();
             Widget( const Geometry& );
             Widget( const Anchor& );
-            Widget( const BorderPrototype& );
+            Widget( const BorderStyle& );
 
             Widget( const Geometry&, const Anchor& );
-            Widget( const Geometry&, const BorderPrototype& );
-            Widget( const Anchor&, const BorderPrototype& );
+            Widget( const Geometry&, const BorderStyle& );
+            Widget( const Anchor&, const BorderStyle& );
 
             Widget( const Geometry&,
-                    const Anchor&, const BorderPrototype& );
+                    const Anchor&, const BorderStyle& );
 
             Widget( const Widget& parent );
 
             Widget( const Widget& parent, const Geometry& );
             Widget( const Widget& parent, const Anchor& );
-            Widget( const Widget& parent, const BorderPrototype& );
+            Widget( const Widget& parent, const BorderStyle& );
 
             Widget( const Widget& parent, const Geometry&, const Anchor& );
             Widget( const Widget& parent,
-                    const Geometry&, const BorderPrototype& );
+                    const Geometry&, const BorderStyle& );
             Widget( const Widget& parent,
-                    const Anchor&, const BorderPrototype& );
+                    const Anchor&, const BorderStyle& );
             Widget( const Widget& parent, const Geometry& g,
-                    const Anchor& a, const BorderPrototype& b );
+                    const Anchor& a, const BorderStyle& b );
 
             ~Widget();
 
