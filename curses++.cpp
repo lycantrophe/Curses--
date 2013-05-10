@@ -410,13 +410,18 @@ cursesxx::Application::Screen::~Screen() {
     endwin();
 }
 
-cursesxx::Application& cursesxx::Application::enable_keypad( const bool enable ) {
-    keypad( stdscr, enable );
+cursesxx::Application& cursesxx::Application::keypad( const bool enable ) {
+    ::keypad( stdscr, enable );
     return *this;
 }
 
-cursesxx::Application& cursesxx::Application::enable_echo( const bool enable ) {
-    enable ? echo() : noecho();
+cursesxx::Application& cursesxx::Application::echo( const bool enable ) {
+    enable ? ::echo() : noecho();
+    return *this;
+}
+
+cursesxx::Application& cursesxx::Application::cursor( const bool enable ) {
+    curs_set( enable ? 1 : 0 );
     return *this;
 }
 

@@ -287,8 +287,9 @@ namespace cursesxx {
 
     class Application {
         public:
-            Application& enable_keypad( const bool enable = true );
-            Application& enable_echo( const bool enable = true );
+            Application& keypad( const bool enable = true );
+            Application& echo( const bool enable = true );
+            Application& cursor( const bool enable = true );
 
         private:
             class Screen {
