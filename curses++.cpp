@@ -420,11 +420,15 @@ cursesxx::Geometry cursesxx::Textfield::text_wrap(
     return cursesxx::Geometry( ( str.size() / width ) + 1, width );
 }
 
+/*
+ * LABEL
+ */
 cursesxx::Label::Label( const std::string& text ) :
     widget( text )
 {}
 
 void cursesxx::Label::redraw() {
+    this->widget.write();
     this->widget.redraw();
 }
 

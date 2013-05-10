@@ -298,6 +298,54 @@ namespace cursesxx {
             Label( const Label& );
     };
 
+    /* A generic button. Hitting it will return a value, which will either be a
+     * function or a simple return value. 
+     */
+
+    template< typename Return >
+        class Button {
+            public:
+                template< typename... Args >
+                    Button( const std::string& text,
+                            bool action,
+                            const Args&... params );
+
+                template< typename... Args >
+                    Button( const std::string& text,
+                            bool action,
+                            std::function< void(Button< Return >&) > focus,
+                            std::function< void(Button< Return >&) > unfocus,
+                            const Args&... params );
+
+                template< typename Action, typename... Args >
+                    Button( const std::string& text,
+                            const Action& action,
+                            const Args&... params );
+
+                template< typename Action, typename... Args >
+                    Button( const std::string& text,
+                            const Action& action,
+                            std::function< void(Button< Return >&) > focus,
+                            std::function< void(Button< Return >&) > unfocus,
+                            const Args&... params );
+
+                void focus();
+                void unfocus();
+                Return trigger();
+
+                void redraw();
+                const Widget& get_widget() const;
+
+            private:
+                std::function< Return() > action;
+                std::function< void(Button<Return>&) > focus_;
+                std::function< void(Button<Return>&) > unfocus_;
+                Label widget;
+
+                static void default_focus( Button< Return >& );
+                static void default_unfocus( Button< Return >& );
+        };
+
     class Application {
         public:
             Application& keypad( const bool enable = true );
@@ -371,9 +419,93 @@ namespace cursesxx {
             widget( args... )
     {}
 
+    template< typename T >
+        template< typename... Args >
+        Button< T >::Button( const std::string& text,
+                bool action,
+                const Args&... args ) :
+            action( [=]{ return action; } ),
+            focus_( &Button< T >::default_focus ),
+            unfocus_( &Button< T >::default_unfocus ),
+            widget( text, args... )
+            {}
+
+    template< typename T >
+        template< typename... Args >
+        Button< T >::Button( const std::string& text,
+                bool action,
+                std::function< void(Button< T >&) > focus,
+                std::function< void(Button< T >&) > unfocus,
+                const Args&... args ) :
+            action( [=]{ return action; } ),
+            focus_( focus ),
+            unfocus_( unfocus ),
+            widget( text, args... )
+            {}
+
+    template< typename T >
+        template< typename Action, typename... Args >
+        Button< T >::Button( const std::string& text,
+                const Action& action,
+                const Args&... params ) :
+            action( action ),
+            focus_( &Button< T >::default_focus ),
+            unfocus_( &Button< T >::default_unfocus ),
+            widget( text, params... )
     {}
 
+    template< typename T >
+        template< typename Action, typename... Args >
+        Button< T >::Button( const std::string& text,
+                const Action& action,
+                std::function< void(Button< T >&) > focus,
+                std::function< void(Button< T >&) > unfocus,
+                const Args&... params ) :
+            action( action ),
+            focus_( focus ),
+            unfocus_( unfocus ),
+            widget( text, params... )
     {}
+
+    /*
+     * BUTTON METHODS
+     */
+
+    template< typename T >
+        void Button< T >::focus() {
+            this->focus_( *this );
+        }
+
+    template< typename T >
+        void Button< T >::unfocus() {
+            this->unfocus_( *this );
+        }
+
+    template< typename T >
+        T Button< T >::trigger() {
+            return this->action();
+        }
+
+    template< typename T >
+        void Button< T >::redraw() {
+            this->widget.redraw();
+        }
+
+    template< typename T >
+        const Widget& Button< T >::get_widget() const {
+            return this->widget.get_widget();
+        }
+
+    template< typename T >
+        void Button< T >::default_focus( Button< T >& b ) {
+            Format bold( b, A_BOLD );
+            b.redraw();
+        }
+
+    template< typename T >
+        void Button< T >::default_unfocus( Button< T >& b ) {
+            b.redraw();
+        }
 }
 
 #endif //CURSESXX_APPLICATION
