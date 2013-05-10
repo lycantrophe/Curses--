@@ -3,6 +3,14 @@
 #include <string>
 #include "curses++.h"
 
+WINDOW* cursesxx::Format::get_win( const Widget& widget ) {
+    return widget.window.window;
+}
+
+cursesxx::Format::~Format() {
+    wattroff( this->win, this->bitmask );
+}
+
 cursesxx::BorderStyle::BorderStyle() : 
     detailed( true ),
     ls( '|' ),

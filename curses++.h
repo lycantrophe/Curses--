@@ -8,6 +8,22 @@
 
 namespace cursesxx {
 
+    class Widget;
+
+    class Format {
+        public:
+            template< typename T >
+                Format( const T&, int bitmask );
+            ~Format();
+
+        private:
+            WINDOW* win;
+            int bitmask;
+
+            static WINDOW* get_win( const Widget& );
+            template< typename T > static WINDOW* get_win( const T& );
+    };
+
     class Color {
         public:
             Color( unsigned int R, unsigned int G, unsigned int B );
@@ -164,6 +180,7 @@ namespace cursesxx {
             Window window;
             Border decoration;
 
+            friend class Format;
     };
 
     /*
@@ -292,7 +309,23 @@ namespace cursesxx {
     Anchor mid( const Widget& parent, const Geometry& child );
 
     /* TEMPLATE IMPLEMENTATIONS */
+
+    /* UTILITIES */
+
+    template< typename T >
+        WINDOW* Format::get_win( const T& widget ) {
+            return Format::get_win( widget.get_widget() );
+        }
+
     /* CONSTRUCTORS */
+    template< typename T >
+        Format::Format( const T& widget, int bitmask ) :
+            win( Format::get_win( widget ) ),
+            bitmask( bitmask )
+    {
+        wattron( this->win, bitmask );
+    }
+
 
     template< typename... Args > 
         Textfield::Textfield( const std::string& text, const Args&... args ) :
