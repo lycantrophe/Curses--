@@ -64,9 +64,14 @@ namespace cursesxx {
      */
     class Geometry {
         public:
-            Geometry();
-            Geometry( const int height, const int width );
-            Geometry( const Geometry& parent, const int height, const int width );
+            Geometry( const bool border = false );
+            Geometry( const int height,
+                    const int width,
+                    const bool border = false );
+            Geometry( const Geometry& parent,
+                    const int height,
+                    const int width,
+                    const bool border = false );
 
             int height() const;
             int width() const;
@@ -86,8 +91,8 @@ namespace cursesxx {
      */
     class Anchor {
         public:
-            Anchor();
-            Anchor( const int y, const int x );
+            Anchor( const bool border = false );
+            Anchor( const int y, const int x, const bool border = false  );
             Anchor( const Anchor& base, const Anchor& offset );
             const int y, x;
     };
