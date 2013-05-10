@@ -156,14 +156,21 @@ namespace cursesxx {
             void redraw();
             void clear();
 
+            void mvhorizontal( int pos );
+            void mvvertical( int pos );
+            void move( int x, int y );
+
             void write( const std::string& str );
             void write( const std::string& str, const int maxlen );
+
+            void decorate( const BorderStyle& );
 
             const Widget& get_widget() const;
 
         private:
             Geometry geometry;
             Anchor anchor;
+            int x = 0, y = 0;
 
             class Window {
                 public:
@@ -172,7 +179,13 @@ namespace cursesxx {
 
                     void refresh();
                     void clear();
+
+                    void move( const Anchor& a, int x, int y );
+                    void put( char c );
+                    void put( char c, const Anchor& a, int y, int x );
+
                     void write( const std::string& );
+                    void write( const std::string&, int x, int y );
                     void write( const std::string&, const int maxlen );
                     WINDOW* window;
             };

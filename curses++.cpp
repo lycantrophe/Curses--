@@ -301,12 +301,30 @@ void cursesxx::Widget::clear() {
     this->window.clear();
 }
 
+void cursesxx::Widget::mvhorizontal( int pos ) {
+    this->x = std::max( std::min( this->geometry.width(), x + pos ), 0 );
+}
+
+void cursesxx::Widget::mvvertical( int pos ) {
+    this->y = std::max( std::min( this->geometry.height(), y + pos ), 0 );
+}
+
+void cursesxx::Widget::move( int y, int x ) {
+    this->mvvertical( y );
+    this->mvhorizontal( x );
+}
+
 void cursesxx::Widget::write( const std::string& str ) {
+    this->window.move( this->anchor, this->y, this->x );
     this->window.write( str );
 }
 
 void cursesxx::Widget::write( const std::string& str, const int maxlen ) {
     this->window.write( str, maxlen );
+}
+
+void cursesxx::Widget::decorate( const cursesxx::BorderStyle& b ) {
+    this->decoration.set( b );
 }
 
 cursesxx::Widget::Window::Window( int h, int w, int y, int x ) :
@@ -325,6 +343,18 @@ void cursesxx::Widget::Window::refresh() {
 
 void cursesxx::Widget::Window::clear() {
     wclear( this->window );
+}
+
+void cursesxx::Widget::Window::move( const Anchor& a, int y, int x ) {
+    wmove( this->window, a.y + y, a.x + x );
+}
+
+void cursesxx::Widget::Window::put( char c ) {
+    wechochar( this->window, c );
+}
+
+void cursesxx::Widget::Window::put( char c, const Anchor& a, int y, int x ) {
+    mvwaddch( this->window, a.y + y, a.x + x, c );
 }
 
 void cursesxx::Widget::Window::write( const std::string& str ) {
