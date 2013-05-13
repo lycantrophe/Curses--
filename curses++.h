@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <memory>
 #include <ncurses.h>
 
 namespace cursesxx {
@@ -152,7 +153,6 @@ namespace cursesxx {
             int height() const;
             int width() const;
 
-            void refresh();
             void redraw();
             void clear();
 
@@ -163,6 +163,9 @@ namespace cursesxx {
             void write( const std::string& str );
             void write( const std::string& str, const int maxlen );
 
+            void put( char c );
+            void put( char c, int y, int x );
+
             void decorate( const BorderStyle& );
 
             const Widget& get_widget() const;
@@ -172,25 +175,15 @@ namespace cursesxx {
             Anchor anchor;
             int x = 0, y = 0;
 
-            class Window {
-                public:
-                    Window( int, int, int, int );
-                    ~Window();
-
-                    void refresh();
-                    void clear();
-
-                    void move( const Anchor& a, int x, int y );
-                    void put( char c );
-                    void put( char c, const Anchor& a, int y, int x );
-
-                    void write( const std::string& );
-                    void write( const std::string&, int x, int y );
-                    void write( const std::string&, const int maxlen );
-                    WINDOW* window;
+            struct Win {
+                void operator()( WINDOW* ptr ) {
+                    wclear( ptr );
+                    wrefresh( ptr );
+                    delwin( ptr ); 
+                }
             };
 
-            Window window;
+            std::unique_ptr< WINDOW, Win > window;
             Border decoration;
 
             friend class Format;

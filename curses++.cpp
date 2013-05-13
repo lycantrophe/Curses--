@@ -4,7 +4,7 @@
 #include "curses++.h"
 
 WINDOW* cursesxx::Format::get_win( const Widget& widget ) {
-    return widget.window.window;
+    return widget.window.get();
 }
 
 cursesxx::Format::~Format() {
@@ -135,114 +135,125 @@ cursesxx::Anchor::Anchor( const Anchor& base, const Anchor& offset ) :
 {}
 
 cursesxx::Widget::Widget() :
-    window( this->geometry.height(),
-            this->geometry.width(),
-            this->anchor.y,
-            this->anchor.x )
+    window( newwin(
+                this->geometry.height(),
+                this->geometry.width(),
+                this->anchor.y,
+                this->anchor.x ) )
 {}
 
 cursesxx::Widget::Widget( const Geometry& g ) :
     geometry( g ),
-    window( g.height(),
-            g.width(),
-            this->anchor.y,
-            this->anchor.x )
+    window( newwin(
+                g.height(),
+                g.width(),
+                this->anchor.y,
+                this->anchor.x ) )
 {}
 
 cursesxx::Widget::Widget( const Anchor& a ) :
     anchor( a ),
-    window( this->geometry.height(),
-            this->geometry.width(),
-            a.y,
-            a.x )
+    window( newwin(
+                this->geometry.height(),
+                this->geometry.width(),
+                a.y,
+                a.x ) )
 {}
 
 cursesxx::Widget::Widget( const BorderStyle& b ) :
     geometry( true ),
     anchor( true ),
-    window( this->geometry.height() + 2,
-            this->geometry.width() + 2,
-            this->anchor.y - 1,
-            this->anchor.x - 1 ),
-    decoration( this->window.window, b )
+    window( newwin(
+                this->geometry.height() + 2,
+                this->geometry.width() + 2,
+                this->anchor.y - 1,
+                this->anchor.x - 1 ) ),
+    decoration( this->window.get(), b )
 {}
 
 cursesxx::Widget::Widget( const Geometry& g, const Anchor& a ) :
     geometry( g ),
     anchor( a ),
-    window( g.height(),
-            g.width(),
-            a.y,
-            a.x )
+    window( newwin( 
+                g.height(),
+                g.width(),
+                a.y,
+                a.x ) )
 {}
 
 cursesxx::Widget::Widget( const Geometry& g, const BorderStyle& b ) :
     geometry( g ),
     anchor( true ),
-    window(
-            g.height() + 2,
-            g.width() + 2,
-            this->anchor.y - 1,
-            this->anchor.x - 1 ),
-    decoration( this->window.window, b )
+    window( newwin(
+                g.height() + 2,
+                g.width() + 2,
+                this->anchor.y - 1,
+                this->anchor.x - 1 ) ),
+    decoration( this->window.get(), b )
 {}
 
 cursesxx::Widget::Widget( const Anchor& a, const BorderStyle& b ) :
     geometry( true ),
     anchor( a ),
-    window( this->geometry.height() + 2,
-            this->geometry.width() + 2,
-            a.y - 1,
-            a.x - 1 ),
-    decoration( this->window.window, b )
+    window( newwin( 
+                this->geometry.height() + 2,
+                this->geometry.width() + 2,
+                a.y - 1,
+                a.x - 1 ) ),
+    decoration( this->window.get(), b )
 {}
 
 cursesxx::Widget::Widget( const Geometry& g,
         const Anchor& a, const BorderStyle& b ) :
     geometry( g ),
     anchor( a ),
-    window( g.height() + 2,
-            g.width() + 2,
-            a.y - 1,
-            a.x - 1 ),
-    decoration( this->window.window, b )
+    window( newwin( 
+                g.height() + 2,
+                g.width() + 2,
+                a.y - 1,
+                a.x - 1 ) ),
+    decoration( this->window.get(), b )
 {}
 
 cursesxx::Widget::Widget( const Widget& parent ) :
     geometry( parent.geometry ),
     anchor( parent.anchor ),
-    window( this->geometry.height(),
-            this->geometry.width(),
-            this->anchor.y,
-            this->anchor.x ),
-    decoration( this->window.window )
+    window( newwin( 
+                this->geometry.height(),
+                this->geometry.width(),
+                this->anchor.y,
+                this->anchor.x ) ),
+    decoration( this->window.get() )
 {}
 
 cursesxx::Widget::Widget( const Widget& parent, const Geometry& g ) :
     geometry( g ),
     anchor( parent.anchor ),
-    window( g.height(),
+    window( newwin(
+                g.height(),
             g.width(),
             this->anchor.y,
-            this->anchor.x )
+            this->anchor.x ) )
 {}
 
 cursesxx::Widget::Widget( const Widget& parent, const Anchor& a ) :
     geometry( parent.geometry ),
     anchor( parent.anchor, a ),
-    window( this->geometry.height(),
-            this->geometry.width(),
-            this->anchor.y,
-            this->anchor.x )
+    window( newwin( 
+                this->geometry.height(),
+                this->geometry.width(),
+                this->anchor.y,
+                this->anchor.x ) )
 {}
 
 cursesxx::Widget::Widget( const Widget& parent, const BorderStyle& b ) :
     geometry( parent.geometry ),
-    window( this->geometry.height() + 2,
-            this->geometry.width() + 2,
-            this->anchor.y - 1,
-            this->anchor.x - 1 ),
-    decoration( this->window.window, b )
+    window( newwin(
+                this->geometry.height() + 2,
+                this->geometry.width() + 2,
+                this->anchor.y - 1,
+                this->anchor.x - 1 ) ),
+    decoration( this->window.get(), b )
 {}
 
 cursesxx::Widget::Widget( const Widget& parent,
@@ -250,32 +261,35 @@ cursesxx::Widget::Widget( const Widget& parent,
         const Anchor& a ) :
     geometry( g ),
     anchor( parent.anchor, a ),
-    window( this->geometry.height(),
-            this->geometry.width(),
-            this->anchor.y,
-            this->anchor.x )
+    window( newwin(
+                this->geometry.height(),
+                this->geometry.width(),
+                this->anchor.y,
+                this->anchor.x ) )
 {}
 
 cursesxx::Widget::Widget( const Widget& parent,
         const Anchor& a, const BorderStyle& b ) :
     geometry( parent.geometry ),
     anchor( parent.anchor, a ),
-    window( this->geometry.height() + 2,
-            this->geometry.width() + 2,
-            this->anchor.y - 1,
-            this->anchor.x - 1 ),
-    decoration( this->window.window, b )
+    window( newwin( 
+                this->geometry.height() + 2,
+                this->geometry.width() + 2,
+                this->anchor.y - 1,
+                this->anchor.x - 1 ) ),
+    decoration( this->window.get(), b )
 {}
 
 cursesxx::Widget::Widget( const Widget& parent, const Geometry& g,
         const Anchor& a, const BorderStyle& b ) :
     geometry( g ),
     anchor( parent.anchor, a ),
-    window( this->geometry.height() + 2,
-            this->geometry.width() + 2,
-            this->anchor.y - 1,
-            this->anchor.x - 1 ),
-    decoration( this->window.window, b )
+    window( newwin( 
+                this->geometry.height() + 2,
+                this->geometry.width() + 2,
+                this->anchor.y - 1,
+                this->anchor.x - 1 ) ),
+    decoration( this->window.get(), b )
 {}
 
 cursesxx::Widget::~Widget() {
@@ -289,16 +303,12 @@ int cursesxx::Widget::width() const {
     return this->geometry.width();
 }
 
-void cursesxx::Widget::refresh() {
-    this->window.refresh();
-}
-
 void cursesxx::Widget::redraw() {
-    this->window.refresh();
+    wrefresh( this->window.get() );
 }
 
 void cursesxx::Widget::clear() {
-    this->window.clear();
+    wclear( this->window.get() );
 }
 
 void cursesxx::Widget::mvhorizontal( int pos ) {
@@ -315,54 +325,28 @@ void cursesxx::Widget::move( int y, int x ) {
 }
 
 void cursesxx::Widget::write( const std::string& str ) {
-    this->window.move( this->anchor, this->y, this->x );
-    this->window.write( str );
+    const Anchor& a = this->anchor;
+    wmove( this->window.get(), a.y + y, a.x + x );
+    waddstr( this->window.get(), str.c_str() );
 }
 
 void cursesxx::Widget::write( const std::string& str, const int maxlen ) {
-    this->window.write( str, maxlen );
+    const Anchor& a = this->anchor;
+    wmove( this->window.get(), a.y + y, a.x + x );
+    waddnstr( this->window.get(), str.c_str(), maxlen );
 }
 
 void cursesxx::Widget::decorate( const cursesxx::BorderStyle& b ) {
     this->decoration.set( b );
 }
 
-cursesxx::Widget::Window::Window( int h, int w, int y, int x ) :
-    window( newwin( h, w, y, x ) )
-{}
-
-cursesxx::Widget::Window::~Window() {
-    wclear( this->window );
-    wrefresh( this->window );
-    delwin( this->window );
+void cursesxx::Widget::put( char c ) {
+    wechochar( this->window.get(), c );
 }
 
-void cursesxx::Widget::Window::refresh() {
-    wrefresh( this->window );
-}
-
-void cursesxx::Widget::Window::clear() {
-    wclear( this->window );
-}
-
-void cursesxx::Widget::Window::move( const Anchor& a, int y, int x ) {
-    wmove( this->window, a.y + y, a.x + x );
-}
-
-void cursesxx::Widget::Window::put( char c ) {
-    wechochar( this->window, c );
-}
-
-void cursesxx::Widget::Window::put( char c, const Anchor& a, int y, int x ) {
-    mvwaddch( this->window, a.y + y, a.x + x, c );
-}
-
-void cursesxx::Widget::Window::write( const std::string& str ) {
-    waddstr( this->window, str.c_str() );
-}
-
-void cursesxx::Widget::Window::write( const std::string& str, const int maxlen ) {
-    waddnstr( this->window, str.c_str(), maxlen );
+void cursesxx::Widget::put( char c, int y, int x ) {
+    const Anchor& a = this->anchor;
+    mvwaddch( this->window.get(), a.y + y, a.x + x, c );
 }
 
 /*
@@ -385,7 +369,7 @@ void cursesxx::Textfield::append( const std::string& str ) {
 }
 
 void cursesxx::Textfield::redraw() {
-    this->widget.refresh();
+    this->widget.redraw();
 }
 
 const cursesxx::Widget& cursesxx::Textfield::get_widget() const {
